@@ -1,0 +1,35 @@
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@using BlazorBootstrap
+@using Microsoft.AspNetCore.Components.Forms
+
+
+<Button Class="mb-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ToggleContentAsync">Toogle
+    Config</Button>
+<div class="row">
+    <Collapse @ref="CollapsableConfig">
+        <EditForm Model="@Coordinates" OnValidSubmit="HandleValidSubmit" FormName="SelectCoordinates">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="border border-3 p-4">
+                <div class="row text-center">
+                    <div class="col-md-6 col-sm-12">
+                        <h2 class="mt-4" style="color: #33d9b2; font-weight: bolder;">First location</h2>
+                        <InputText class="mx-2 my-2" @bind-Value="Coordinates.PrimaryLatitude" placeholder="Latitude" />
+                        <InputText class="mx-2 my-2" @bind-Value="Coordinates.PrimaryLongitude"
+                            placeholder="Longitude" />
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <h2 class="mt-4" style="color: #34ace0; font-weight: bolder;">Second location</h2>
+                        <InputText class="mx-2 my-2" @bind-Value="Coordinates.SecondaryLatitude"
+                            placeholder="Latitude" />
+                        <InputText class="mx-2 my-2" @bind-Value="Coordinates.SecondaryLongitude"
+                            placeholder="Longitude" />
+                    </div>
+                </div>
+                <div class="row text-center" style="max-width: 80%; margin-left: auto; margin-right: auto;">
+                    <Button Class="mt-4" Type="ButtonType.Submit" Color="ButtonColor.Primary" To="#">Save</Button>
+                </div>
+            </div>
+        </EditForm>
+    </Collapse>
+</div>

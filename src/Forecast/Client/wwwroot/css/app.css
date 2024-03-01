@@ -4,6 +4,16 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.danger-background {
+    background-color: #ff5252; /* Or any color */
+    /* Add more background properties as needed */
+}
+
+.normal-background {
+    background-color: #f0f0f0; /* Or any color */
+    /* Add more background properties as needed */
+}
+
 h1:focus {
     outline: none;
 }

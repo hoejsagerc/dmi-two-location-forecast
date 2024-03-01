@@ -2,52 +2,101 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject HttpClient Http
 @using BlazorBootstrap
+@using Forecast.Client.Shared.Components.ConfigureComponent
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Text.Json
 @using ApexCharts
 
+@if (!String.IsNullOrEmpty(CallOutPrecText) || !String.IsNullOrEmpty(CallOutWindText))
+{
+    <div class="row text-center">
+        <Callout Type="CalloutType.Danger">
+            <strong>Not suitable for riding the bike today!</strong><br>
+            <span class="my-2">@CallOutPrecText</span><br>
+            <span class="my-2">@CallOutWindText</span>
+        </Callout>
+    </div>
+}
+
 <div class="row">
-    <EditForm Model="@Coordinates" OnValidSubmit="HandleValidSubmit" FormName="SelectCoordinates">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="border border-3 p-4">
-            <div class="row text-center">
-                <div class="col-md-6 col-sm-12">
-                    <h2 class="mt-4">First location</h2>
-                    <InputText class="mx-2 my-2" @bind-Value="Coordinates.PrimaryLatitude" placeholder="Latitude" />
-                    <InputText class="mx-2 my-2" @bind-Value="Coordinates.PrimaryLongitude" placeholder="Longitude" />
-                </div>
-                <div class="col-md-6 col-sm-12">
-                    <h2 class="mt-4">Second location</h2>
-                    <InputText class="mx-2 my-2" @bind-Value="Coordinates.SecondaryLatitude" placeholder="Latitude" />
-                    <InputText class="mx-2 my-2" @bind-Value="Coordinates.SecondaryLongitude" placeholder="Longitude" />
+    <div class="col-lg-2 col-md-1 col-sm-0" />
+
+    <div class="col-lg-8 col-md-10 col-sm-12">
+        <ConfigureComponent Coordinates="Coordinates" WeatherData="WeatherData"
+            OnCoordinatesUpdated="@OnCoordinatesUpdated" OnWeatherDataUpdated="@OnWeatherDataUpdated"
+            IsLoading="IsLoading" OnDataLoading="@OnDataLoading" />
+
+        @if (IsLoading)
+        {
+            <div class="d-flex justify-content-center pt-5">
+                <Spinner Type="SpinnerType.Border" Size="SpinnerSize.ExtraLarge" />
+            </div>
+        }
+        else
+        {
+
+            @* Precipitation Diagram *@
+            <div class="row mt-5">
+                <div class="forecast-diagram">
+                    <ApexChart @ref="precChart" TItem="WeatherFeature" Title="Precipitation Forecast (mm)" Height="400">
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="prec_loc1"
+                            SeriesType="SeriesType.Bar" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L1Precipitation)" Color="#33d9b2">
+                        </ApexPointSeries>
+
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="prec_loc2"
+                            SeriesType="SeriesType.Bar" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L2Precipitation)" Color="#34ace0">
+                        </ApexPointSeries>
+                    </ApexChart>
                 </div>
             </div>
-            <div class="row text-center" style="max-width: 80%; margin-left: auto; margin-right: auto;">
-                <Button Class="mt-4" Type="ButtonType.Submit" Color="ButtonColor.Primary" To="#">Save</Button>
+
+            @* Wind Diagram *@
+            <div class="row mt-5">
+                <div class="forecast-diagram">
+                    <ApexChart @ref="windChart" TItem="WeatherFeature" Title="Wind Forecast (m/s)" Height="400">
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="wind_loc1"
+                            SeriesType="SeriesType.Bar" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L1WindSpeed)" Color="#33d9b2">
+                        </ApexPointSeries>
+
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="wgust_loc1"
+                            SeriesType="SeriesType.Line" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L1GustWindSpeed)" Color="#218c74">
+                        </ApexPointSeries>
+
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="wind_loc2"
+                            SeriesType="SeriesType.Bar" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L2WindSpeed)" Color="#34ace0">
+                        </ApexPointSeries>
+
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="wgust_loc2"
+                            SeriesType="SeriesType.Line" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L2GustWindSpeed)" Color="#227093">
+                        </ApexPointSeries>
+                    </ApexChart>
+                </div>
             </div>
-        </div>
-    </EditForm>
-</div>
-<div class="row mt-5">
-    <ApexChart TItem="WeatherFeature" Title="Temperature Forecast" Options="options">
-        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="temp_loc1"
-            SeriesType="SeriesType.Line" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
-            YValue="@(e => e.L1TemperatureC)">
-        </ApexPointSeries>
-        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="temp_loc2"
-            SeriesType="SeriesType.Line" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
-            YValue="@(e => e.L2TemperatureC)">
-        </ApexPointSeries>
 
-        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="prec_loc1"
-            SeriesType="SeriesType.Bar" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
-            YValue="@(e => e.L1Precipitation)">
-        </ApexPointSeries>
-        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="prec_loc2"
-            SeriesType="SeriesType.Bar" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
-            YValue="@(e => e.L2Precipitation)">
-        </ApexPointSeries>
+            @* Temperature Diagram *@
+            <div class="row mt-5">
+                <div class="forecast-diagram">
+                    <ApexChart @ref="tempChart" TItem="WeatherFeature" Title="Temperature Forecast (celsius)" Height="400">
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="temp_loc1"
+                            SeriesType="SeriesType.Line" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L1TemperatureC)" Color="#218c74">
+                        </ApexPointSeries>
 
-    </ApexChart>
+                        <ApexPointSeries TItem="WeatherFeature" Items="WeatherData.Features" Name="temp_loc2"
+                            SeriesType="SeriesType.Line" XValue="@(e => e.DateTime.LocalDateTime.ToString("g"))"
+                            YValue="@(e => e.L2TemperatureC)" Color="#34ace0">
+                        </ApexPointSeries>
+                    </ApexChart>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-2 col-md-1 col-sm-0" />
 </div>

@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 
+namespace Forecast.Shared.Models;
+
 
 public partial class ForecastResponse
 {
@@ -29,9 +31,6 @@ public partial class Domain
 
     [JsonPropertyName("axes")]
     public Axes Axes { get; set; }
-
-    [JsonPropertyName("referencing")]
-    public Referencing[] Referencing { get; set; }
 }
 
 public partial class Axes
@@ -61,37 +60,24 @@ public partial class X
     public double[] Bounds { get; set; }
 }
 
-public partial class Referencing
-{
-    [JsonPropertyName("coordinates")]
-    public string[] Coordinates { get; set; }
 
-    // [JsonPropertyName("system")]
-    // public SystemClass System { get; set; }
-}
-
-// public partial class SystemClass
-// {
-//     [JsonPropertyName("type")]
-//     public string Type { get; set; }
-
-//     [JsonPropertyName("id", NullValueHandling = NullValueHandling.Ignore)]
-//     public Uri Id { get; set; }
-
-//     [JsonPropertyName("calendar", NullValueHandling = NullValueHandling.Ignore)]
-//     public string Calendar { get; set; }
-// }
 
 public partial class Parameters
 {
     [JsonPropertyName("temperature-0m")]
-    public ParametersTemperature0M Temperature0M { get; set; }
+    public ParametersGustWindSpeed10M Temperature0M { get; set; }
+
+    [JsonPropertyName("gust-wind-speed-10m")]
+    public ParametersGustWindSpeed10M GustWindSpeed10M { get; set; }
+
+    [JsonPropertyName("wind-speed-10m")]
+    public ParametersGustWindSpeed10M WindSpeed10M { get; set; }
 
     [JsonPropertyName("total-precipitation")]
-    public ParametersTemperature0M TotalPrecipitation { get; set; }
+    public ParametersGustWindSpeed10M TotalPrecipitation { get; set; }
 }
 
-public partial class ParametersTemperature0M
+public partial class ParametersGustWindSpeed10M
 {
     [JsonPropertyName("type")]
     public string Type { get; set; }
@@ -118,13 +104,19 @@ public partial class ObservedProperty
 public partial class Ranges
 {
     [JsonPropertyName("temperature-0m")]
-    public RangesTemperature0M Temperature0M { get; set; }
+    public RangesGustWindSpeed10M Temperature0M { get; set; }
+
+    [JsonPropertyName("gust-wind-speed-10m")]
+    public RangesGustWindSpeed10M GustWindSpeed10M { get; set; }
+
+    [JsonPropertyName("wind-speed-10m")]
+    public RangesGustWindSpeed10M WindSpeed10M { get; set; }
 
     [JsonPropertyName("total-precipitation")]
-    public RangesTemperature0M TotalPrecipitation { get; set; }
+    public RangesGustWindSpeed10M TotalPrecipitation { get; set; }
 }
 
-public partial class RangesTemperature0M
+public partial class RangesGustWindSpeed10M
 {
     [JsonPropertyName("type")]
     public string Type { get; set; }
@@ -132,8 +124,6 @@ public partial class RangesTemperature0M
     [JsonPropertyName("dataType")]
     public string DataType { get; set; }
 
-    [JsonPropertyName("axisNames")]
-    public string[] AxisNames { get; set; }
 
     [JsonPropertyName("shape")]
     public long[] Shape { get; set; }

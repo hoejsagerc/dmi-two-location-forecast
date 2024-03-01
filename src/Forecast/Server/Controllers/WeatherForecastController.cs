@@ -13,10 +13,10 @@ public class WeatherForecastController : ControllerBase
         _weatherService = weatherService;
     }
 
-    [HttpPost]
-    public async Task<WeatherForecast> Get([FromBody] Coordinates coordinates)
+    [HttpPost("{daysAhead}")]
+    public async Task<WeatherForecast> Get([FromBody] Coordinates coordinates, int daysAhead)
     {
-        WeatherForecast forecast = await _weatherService.GetForecastAsync(coordinates);
+        WeatherForecast forecast = await _weatherService.GetForecastAsync(coordinates, daysAhead);
         return forecast;
     }
 }
